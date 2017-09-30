@@ -1,4 +1,4 @@
 !vendor.json
 
 .cache
-src/goflink/vendor
+vendor

@@ -1,6 +1,6 @@
 package client
 
-import "goflink"
+import "github.com/gkumar7/goflink"
 
 type overview struct {
 }

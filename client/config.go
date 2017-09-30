@@ -1,6 +1,6 @@
 package client
 
-import "goflink"
+import "github.com/gkumar7/goflink"
 
 var _ goflink.Config = (*config)(nil)
 

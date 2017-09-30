@@ -8,6 +8,6 @@ branches:
     - master
 
 script:
-  - go test goflink...
+  - go test github.com/gkumar7/goflink...
 
 sudo: false

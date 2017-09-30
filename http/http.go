@@ -3,8 +3,9 @@ package http
 import (
 	"bytes"
 	"fmt"
-	"goflink"
 	"net/http"
+
+	"github.com/gkumar7/goflink"
 )
 
 type Client struct {

@@ -1,9 +1,10 @@
 package http_test
 
 import (
-	"goflink/http"
 	stdHTTP "net/http"
 	"testing"
+
+	"github.com/gkumar7/goflink/http"
 )
 
 var (
