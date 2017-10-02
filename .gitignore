@@ -1,5 +1,4 @@
-!vendor.json
-
 .idea
 .cache
-vendor
+vendor/*
+!vendor/vendor.json
