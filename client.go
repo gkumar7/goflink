@@ -1,15 +1,16 @@
 package goflink
 
-type ConfigResult struct {
-	RefreshInterval int
-	TimeZoneOffset  int
-	TimeZoneName    int
-	FlinkVersion    int
-	FlinkRevision   int
+// Config provides methods for /config route
+type Config interface {
+	Get() (*ConfigResult, error)
 }
 
-type Config interface {
-	Get() *ConfigResult
+type ConfigResult struct {
+	RefreshInterval int    `json:"refresh-interval"`
+	TimeZoneOffset  int    `json:"timezone-offset"`
+	TimeZoneName    string `json:"timezone-name"`
+	FlinkVersion    string `json:"flink-version"`
+	FlinkRevision   string `json:"flink-revision"`
 }
 
 type Overview interface {

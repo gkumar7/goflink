@@ -1,12 +1,35 @@
 package client
 
-import "github.com/gkumar7/goflink"
+import (
+	"encoding/json"
+	"io/ioutil"
 
-var _ goflink.Config = (*config)(nil)
+	"github.com/gkumar7/goflink/http"
 
-type config struct {
+	"github.com/gkumar7/goflink"
+)
+
+var _ goflink.Config = (*Config)(nil)
+
+type Config struct {
+	HTTPClient *http.Client
 }
 
-func (c *config) Get() *goflink.ConfigResult {
-	return nil
+func (c *Config) Get() (cr *goflink.ConfigResult, err error) {
+	resp, err := c.HTTPClient.Get(&http.Pair{Key: "config"})
+	if err != nil {
+		return
+	}
+
+	d, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(d, &cr)
+	if err != nil {
+		return
+	}
+
+	return
 }

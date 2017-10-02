@@ -1,34 +1,58 @@
 package http_test
 
 import (
-	stdHTTP "net/http"
+	netHTTP "net/http"
 	"testing"
 
 	"github.com/gkumar7/goflink/http"
 )
 
 var (
-	mockHTTPClient = new(MockHTTPClient)
+	endpointCaptor = new(EndpointCaptor)
 	client         = &http.Client{
-		HTTP:     mockHTTPClient,
+		HTTP:     endpointCaptor,
 		FlinkURL: "localhost",
 	}
 )
 
-type MockHTTPClient struct {
-	endpointCapture string
+type EndpointCaptor struct {
+	val string
 }
 
-func (m *MockHTTPClient) Get(endpoint string) (*stdHTTP.Response, error) {
-	m.endpointCapture = endpoint
+func (ec *EndpointCaptor) Get(endpoint string) (*netHTTP.Response, error) {
+	ec.val = endpoint
 	return nil, nil
 }
 
 func TestGet(t *testing.T) {
-	client.Get(&http.Pair{"jobs", "1234"})
-	expected := "localhost/jobs/1234"
-	actual := mockHTTPClient.endpointCapture
-	if expected != actual {
-		t.Fatalf("Expected %s, but actual was %s\n", expected, actual)
-	}
+	t.Run("Pair with key and value", func(t *testing.T) {
+		client.Get(&http.Pair{"jobs", "1234"})
+		expected := "localhost/jobs/1234"
+		actual := endpointCaptor.val
+		if expected != actual {
+			t.Fatalf("Expected %s, but actual was %s\n", expected, actual)
+		}
+	})
+
+	t.Run("Pair with only key", func(t *testing.T) {
+		client.Get(&http.Pair{Key: "jobs"})
+		expected := "localhost/jobs"
+		actual := endpointCaptor.val
+		if expected != actual {
+			t.Fatalf("Expected %s, but actual was %s\n", expected, actual)
+		}
+	})
+
+	t.Run("Multiple pairs", func(t *testing.T) {
+		client.Get(
+			&http.Pair{"jobs", "1234"},
+			&http.Pair{"vertices", "1234"},
+			&http.Pair{Key: "taskmanagers"},
+		)
+		expected := "localhost/jobs/1234/vertices/1234/taskmanagers"
+		actual := endpointCaptor.val
+		if expected != actual {
+			t.Fatalf("Expected %s, but actual was %s\n", expected, actual)
+		}
+	})
 }

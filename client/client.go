@@ -4,23 +4,25 @@ import (
 	"io/ioutil"
 	"os"
 
-	yaml "gopkg.in/yaml.v2"
-)
+	"github.com/gkumar7/goflink"
+	"github.com/gkumar7/goflink/http"
 
-var (
-	Props = props{}
+	yaml "gopkg.in/yaml.v2"
 )
 
 type props struct {
 	FlinkURL string `yaml:"flinkURL"`
 }
 
-type client struct {
-	Config   *config
-	Overview *overview
+// A Client is structured such that each of its members correspond to
+// a single base route of the Flink REST API
+type Client struct {
+	Config   goflink.Config
+	Overview goflink.Overview
 }
 
-func NewClient(propsFile string) (c *client, err error) {
+// NewClient creates a goflink REST Client
+func NewClient(propsFile string) (c *Client, err error) {
 	f, err := os.Open(propsFile)
 	if err != nil {
 		return
@@ -31,13 +33,15 @@ func NewClient(propsFile string) (c *client, err error) {
 		return
 	}
 
-	err = yaml.Unmarshal(data, &Props)
+	var p props
+	err = yaml.Unmarshal(data, &p)
 	if err != nil {
 		return
 	}
 
-	return &client{
-		Config:   new(config),
-		Overview: new(overview),
+	HTTPClient := http.NewClient(p.FlinkURL)
+	return &Client{
+		Config:   &Config{HTTPClient},
+		Overview: &Overview{HTTPClient},
 	}, nil
 }
