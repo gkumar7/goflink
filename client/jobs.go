@@ -7,14 +7,14 @@ import (
 	"github.com/gkumar7/goflink/http"
 )
 
-var _ goflink.Overview = (*Overview)(nil)
+var _ goflink.Jobs = (*Jobs)(nil)
 
-type Overview struct {
+type Jobs struct {
 	HTTPClient *http.Client
 }
 
-func (o *Overview) Get() (or *goflink.OverviewResult, err error) {
-	d, err := o.HTTPClient.GetBody(&http.Pair{Key: "overview"})
+func (o *Jobs) Get() (or *goflink.JobsResult, err error) {
+	d, err := o.HTTPClient.GetBody(&http.Pair{Key: "jobs"})
 	if err != nil {
 		return
 	}

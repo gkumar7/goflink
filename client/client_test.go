@@ -22,7 +22,7 @@ func TestNewClient(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func TestConfigGet(t *testing.T) {
 	expected := &goflink.ConfigResult{
 		RefreshInterval: 3000,
 		TimeZoneOffset:  -21600000,
@@ -47,11 +47,50 @@ func TestGet(t *testing.T) {
 
 	httpClient := &http.Client{HTTP: mock}
 	client := &client.Client{
-		Config:   &client.Config{httpClient},
-		Overview: &client.Overview{httpClient},
+		Config: &client.Config{httpClient},
 	}
 
 	actual, err := client.Config.Get()
+	if err != nil {
+		t.Fatalf("Unexpected err: %v", err)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Expected %v, actual %v", expected, actual)
+	}
+}
+
+func TestOverviewGet(t *testing.T) {
+	expected := &goflink.OverviewResult{
+		TaskManagers: 17,
+		SlotsResult:  goflink.SlotsResult{Total: 68, Available: 68},
+		JobsResult:   goflink.JobsResult{Running: 0, Finished: 3, Cancelled: 1, Failed: 0},
+	}
+	mock := &mock.HTTPMock{
+		ReturnData: fmt.Sprintf(
+			`{"taskmanagers": %d,
+                          "slots-total": %d,
+                          "slots-available": %d,
+                          "jobs-running": %d,
+                          "jobs-finished": %d,
+                          "jobs-cancelled": %d,
+                          "jobs-failed": %d}`,
+			expected.TaskManagers,
+			expected.SlotsResult.Total,
+			expected.SlotsResult.Available,
+			expected.JobsResult.Running,
+			expected.JobsResult.Finished,
+			expected.JobsResult.Cancelled,
+			expected.JobsResult.Failed,
+		),
+	}
+
+	httpClient := &http.Client{HTTP: mock}
+	client := &client.Client{
+		Overview: &client.Overview{httpClient},
+	}
+
+	actual, err := client.Overview.Get()
 	if err != nil {
 		t.Fatalf("Unexpected err: %v", err)
 	}

@@ -14,23 +14,27 @@ type ConfigResult struct {
 }
 
 type Overview interface {
-	Get() *Summary
+	Get() (*OverviewResult, error)
 }
 
-type Summary struct {
-	TaskManagers int
-	Slots
-	Jobs
+type OverviewResult struct {
+	TaskManagers int `json:"taskmanagers"`
+	SlotsResult
+	JobsResult
 }
 
-type Slots struct {
-	Total     int
-	Available int
+type SlotsResult struct {
+	Total     int `json:"slots-total"`
+	Available int `json:"slots-available"`
 }
 
-type Jobs struct {
-	Running   int
-	Finished  int
-	Cancelled int
-	Failed    int
+type Jobs interface {
+	Get() (*JobsResult, error)
+}
+
+type JobsResult struct {
+	Running   int `json:"jobs-running"`
+	Finished  int `json:"jobs-finished"`
+	Cancelled int `json:"jobs-cancelled"`
+	Failed    int `json:"jobs-failed"`
 }

@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gkumar7/goflink"
@@ -38,6 +39,15 @@ func (c *Client) Get(pairs ...*Pair) (resp *http.Response, err error) {
 		}
 	}
 	return c.HTTP.Get(fmt.Sprintf("%s%s", c.FlinkURL, endpoint.String()))
+}
+
+func (c *Client) GetBody(pairs ...*Pair) (body []byte, err error) {
+	resp, err := c.Get(pairs...)
+	if err != nil {
+		return
+	}
+
+	return ioutil.ReadAll(resp.Body)
 }
 
 func NewClient(flinkURL string) *Client {
