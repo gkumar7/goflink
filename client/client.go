@@ -19,6 +19,7 @@ type props struct {
 type Client struct {
 	Config   goflink.Config
 	Overview goflink.Overview
+	Jobs     goflink.Jobs
 }
 
 // NewClient creates a goflink REST Client
@@ -43,5 +44,6 @@ func NewClient(propsFile string) (c *Client, err error) {
 	return &Client{
 		Config:   &Config{HTTPClient},
 		Overview: &Overview{HTTPClient},
+		Jobs:     &Jobs{HTTPClient},
 	}, nil
 }

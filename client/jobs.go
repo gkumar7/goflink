@@ -13,12 +13,12 @@ type Jobs struct {
 	HTTPClient *http.Client
 }
 
-func (o *Jobs) Get() (or *goflink.JobsResult, err error) {
-	d, err := o.HTTPClient.GetBody(&http.Pair{Key: "jobs"})
+func (j *Jobs) Get() (jr *goflink.JobIdsResult, err error) {
+	d, err := j.HTTPClient.GetBody(&http.Pair{Key: "jobs"})
 	if err != nil {
 		return
 	}
 
-	err = json.Unmarshal(d, &or)
+	err = json.Unmarshal(d, &jr)
 	return
 }

@@ -1,6 +1,7 @@
 package client_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
@@ -62,9 +63,9 @@ func TestConfigGet(t *testing.T) {
 
 func TestOverviewGet(t *testing.T) {
 	expected := &goflink.OverviewResult{
-		TaskManagers: 17,
-		SlotsResult:  goflink.SlotsResult{Total: 68, Available: 68},
-		JobsResult:   goflink.JobsResult{Running: 0, Finished: 3, Cancelled: 1, Failed: 0},
+		TaskManagers:    17,
+		SlotsResult:     goflink.SlotsResult{Total: 68, Available: 68},
+		JobCountsResult: goflink.JobCountsResult{Running: 0, Finished: 3, Cancelled: 1, Failed: 0},
 	}
 	mock := &mock.HTTPMock{
 		ReturnData: fmt.Sprintf(
@@ -78,10 +79,10 @@ func TestOverviewGet(t *testing.T) {
 			expected.TaskManagers,
 			expected.SlotsResult.Total,
 			expected.SlotsResult.Available,
-			expected.JobsResult.Running,
-			expected.JobsResult.Finished,
-			expected.JobsResult.Cancelled,
-			expected.JobsResult.Failed,
+			expected.JobCountsResult.Running,
+			expected.JobCountsResult.Finished,
+			expected.JobCountsResult.Cancelled,
+			expected.JobCountsResult.Failed,
 		),
 	}
 
@@ -91,6 +92,47 @@ func TestOverviewGet(t *testing.T) {
 	}
 
 	actual, err := client.Overview.Get()
+	if err != nil {
+		t.Fatalf("Unexpected err: %v", err)
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Expected %v, actual %v", expected, actual)
+	}
+}
+
+func getJson(lst []string) string {
+	b, _ := json.Marshal(lst)
+	return string(b)
+}
+
+func TestJobsGet(t *testing.T) {
+	expected := &goflink.JobIdsResult{
+		Running:   []string{"a", "b"},
+		Finished:  []string{"a", "b", "c"},
+		Cancelled: []string{"a"},
+		Failed:    []string{},
+	}
+	mock := &mock.HTTPMock{
+		ReturnData: fmt.Sprintf(
+			`{"jobs-running": %s,
+                          "jobs-finished": %s,
+                          "jobs-cancelled": %s,
+                          "jobs-failed": %s
+                         }`,
+			getJson(expected.Running),
+			getJson(expected.Finished),
+			getJson(expected.Cancelled),
+			getJson(expected.Failed),
+		),
+	}
+
+	httpClient := &http.Client{HTTP: mock}
+	client := &client.Client{
+		Jobs: &client.Jobs{httpClient},
+	}
+
+	actual, err := client.Jobs.Get()
 	if err != nil {
 		t.Fatalf("Unexpected err: %v", err)
 	}

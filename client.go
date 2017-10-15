@@ -20,7 +20,7 @@ type Overview interface {
 type OverviewResult struct {
 	TaskManagers int `json:"taskmanagers"`
 	SlotsResult
-	JobsResult
+	JobCountsResult
 }
 
 type SlotsResult struct {
@@ -29,12 +29,19 @@ type SlotsResult struct {
 }
 
 type Jobs interface {
-	Get() (*JobsResult, error)
+	Get() (*JobIdsResult, error)
 }
 
-type JobsResult struct {
+type JobCountsResult struct {
 	Running   int `json:"jobs-running"`
 	Finished  int `json:"jobs-finished"`
 	Cancelled int `json:"jobs-cancelled"`
 	Failed    int `json:"jobs-failed"`
+}
+
+type JobIdsResult struct {
+	Running   []string `json:"jobs-running"`
+	Finished  []string `json:"jobs-finished"`
+	Cancelled []string `json:"jobs-cancelled"`
+	Failed    []string `json:"jobs-failed"`
 }
