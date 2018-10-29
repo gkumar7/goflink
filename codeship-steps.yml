@@ -1,0 +1,6 @@
+---
+  - 
+    name: "test"
+    service: "goflink"
+    command: "go test github.com/gkumar7/goflink..."
+    tag: "master"
