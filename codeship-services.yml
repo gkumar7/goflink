@@ -1,0 +1,2 @@
+goflink:
+  image: "golang:1.10.4"
